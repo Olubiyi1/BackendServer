@@ -3,7 +3,7 @@ import { comparePassword,createJwt,hashPassword } from "../middleware/guard";
 
 
 
-export const createUser = async (userData: IUser)=>{
+export const createUser = async (userData: IUser, token:string)=>{
     
     try{
         // checking if email already exist before registering
@@ -13,7 +13,7 @@ export const createUser = async (userData: IUser)=>{
         }
 
         const password = await hashPassword(userData.password)
-        const newUser = new userModel({...userData, password});
+        const newUser = new userModel({...userData, password, verificationToken: token,});
 
         const savedUser =  await newUser.save()
         return { error : null,data: savedUser}

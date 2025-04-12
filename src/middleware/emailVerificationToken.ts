@@ -1,26 +1,32 @@
-import { Request, Response, NextFunction } from 'express';
-import crypto from 'crypto';
+import crypto from "crypto"
 
-// Middleware to generate verification token
-export const generateVerificationTokenMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // Extracting email from the request body
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required." });
+export const tokenMiddleware = {
+  // Generate a verification token and attach to request object
+  generateToken: (req: any, res: any, next: any) => {
+    try {
+      // Generate a random 32-byte hex string
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      
+      // Attach the token to the request object for use in subsequent middleware/route handlers
+      req.verificationToken = verificationToken;
+      
+      next();
+    } 
+    catch(error) {
+      console.error('Error generating verification token:', error);
+      res.status(500).json({ error: 'Failed to generate verification token' });
     }
-
-    // Generate a secure verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-
-    // Attach the verification token to the request object for use in the controller
-    req.body.verificationToken = verificationToken;
-
-    // Proceed to the next middleware or controller
+  }, // <-- Missing comma was here
+  
+  // Verify a token from request
+  verifyToken: (req: any, res: any, next: any) => {
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.status(400).json({ error: 'Verification token is required' });
+    }
+    
+    req.validatedToken = token;
     next();
-  } catch (error) {
-    console.error('Error in token generation middleware:', error);
-    return res.status(500).json({ message: 'Something went wrong, please try again later.' });
   }
-};
+}

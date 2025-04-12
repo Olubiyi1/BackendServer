@@ -1,3 +1,4 @@
+import { string } from "joi";
 import mongoose,{Schema,Document} from "mongoose";
 
 export interface IUser extends Document{
@@ -5,7 +6,8 @@ export interface IUser extends Document{
     lastname:string,
     email:string,
     username:string,
-    password:string
+    password:string,
+    verificationToken:string
 }
 
 const userSchema:Schema = new mongoose.Schema(
@@ -27,6 +29,9 @@ const userSchema:Schema = new mongoose.Schema(
         },
         "password":{type:String,
             required:[true,"enter a password"]
+        },
+        "verificationToken":{
+            type:String
         }
     },
     {timestamps:true}

@@ -1,0 +1,35 @@
+// In user.service.ts
+export const verifyEmail = async (token: string) => {
+  try {
+    const user = await UserModel.findOne({ verificationToken: token });
+
+    if (!user) {
+      return { error: "Invalid or expired token", data: null };
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    return { error: null, data: user };
+  } catch (error) {
+    return { error: error.message, data: null };
+  }
+};
+
+in controller
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.query;
+
+    const { error, data } = await userService.verifyEmail(token as string);
+
+    if (error) {
+      return ResponseHandler.validationError(res, null, error);
+    }
+
+    return ResponseHandler.success(res, data, "Email verified successfully");
+  } catch (error: any) {
+    return ResponseHandler.validationError(res, null, error.message);
+  }
+};
