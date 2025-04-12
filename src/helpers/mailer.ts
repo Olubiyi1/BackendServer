@@ -1,6 +1,6 @@
 // Simplified function to send a verification email without tokens
 import nodemailer from 'nodemailer';
-import config from '../../src/config/config'
+import config from '../config/config';
 
 const transporter = nodemailer.createTransport({
   host: config.host,
