@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSimpleVerificationMail = void 0;
+exports.verificationMail = void 0;
 // Simplified function to send a verification email without tokens
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const config_1 = __importDefault(require("../../src/config/config"));
@@ -25,22 +25,27 @@ const transporter = nodemailer_1.default.createTransport({
         pass: config_1.default.pass,
     },
 });
-// Function to send a simple verification email
-const sendSimpleVerificationMail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+// Function to send verification email
+const verificationMail = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
+    const verificationLink = token;
+    // email content
     const mailOptions = {
-        from: config_1.default.user, // sender address
-        to: email, // recipient address
-        subject: 'Email Verification', // email subject
-        text: 'Please verify your email address.', // plain text body
-        html: '<p>Please verify your email address.</p>', // HTML body
+        // sender address
+        from: config_1.default.user,
+        to: email,
+        subject: 'Email Verification',
+        text: 'Please verify your email address',
+        html: `<p>Please verify your email address by clicking on the verification link ${verificationLink}.</p>`,
     };
+    // send mail
     try {
-        yield transporter.sendMail(mailOptions);
-        console.log('Verification email sent!');
+        const info = yield transporter.sendMail(mailOptions);
+        console.log('Verification email sent!', info.messageId);
+        return info;
     }
     catch (error) {
         console.error('Error sending email:', error);
-        // throw new Error('Failed to send email');
+        throw Error('Failed to send email');
     }
 });
-exports.sendSimpleVerificationMail = sendSimpleVerificationMail;
+exports.verificationMail = verificationMail;

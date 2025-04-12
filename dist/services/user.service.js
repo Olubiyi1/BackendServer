@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.signIn = exports.createUser = void 0;
 const userSchema_model_1 = __importDefault(require("../models/userSchema.model"));
 const guard_1 = require("../middleware/guard");
-const createUser = (userData) => __awaiter(void 0, void 0, void 0, function* () {
+const createUser = (userData, token) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // checking if email already exist before registering
         const existingUser = yield userSchema_model_1.default.findOne({ email: userData.email });
@@ -23,7 +23,7 @@ const createUser = (userData) => __awaiter(void 0, void 0, void 0, function* () 
             return { error: "Email already Exists", data: null };
         }
         const password = yield (0, guard_1.hashPassword)(userData.password);
-        const newUser = new userSchema_model_1.default(Object.assign(Object.assign({}, userData), { password }));
+        const newUser = new userSchema_model_1.default(Object.assign(Object.assign({}, userData), { password, verificationToken: token }));
         const savedUser = yield newUser.save();
         return { error: null, data: savedUser };
     }

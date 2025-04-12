@@ -7,11 +7,11 @@ const express_1 = __importDefault(require("express"));
 const user_controller_1 = require("../controllers/user.controller");
 const userValidationSchema_1 = require("../validationSchemas/userValidationSchema");
 const userValidationMiddleware_1 = require("../middleware/userValidationMiddleware");
-const mailer_1 = require("../helpers/mailer");
+const emailVerificationToken_1 = require("../middleware/emailVerificationToken");
 const router = express_1.default.Router();
 router.get("/", (req, res) => {
     res.send("up and running");
 });
-router.post("/register", (0, userValidationMiddleware_1.validateRequest)(userValidationSchema_1.registerUserValidationSchema), mailer_1.sendSimpleVerificationMail, user_controller_1.registerUser);
+router.post("/register", (0, userValidationMiddleware_1.validateRequest)(userValidationSchema_1.registerUserValidationSchema), emailVerificationToken_1.tokenMiddleware.generateToken, user_controller_1.registerUser);
 router.post("/login", (0, userValidationMiddleware_1.validateRequest)(userValidationSchema_1.loginValidationSchema), user_controller_1.loginUser);
 exports.default = router;

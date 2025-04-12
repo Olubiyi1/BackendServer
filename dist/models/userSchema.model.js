@@ -22,6 +22,9 @@ const userSchema = new mongoose_1.default.Schema({
     },
     "password": { type: String,
         required: [true, "enter a password"]
+    },
+    "verificationToken": {
+        type: String
     }
 }, { timestamps: true });
 const userModel = mongoose_1.default.model("userModel", userSchema);
